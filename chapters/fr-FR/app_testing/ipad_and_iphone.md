@@ -6,7 +6,7 @@ La manière facile: Lancez votre suite de tests plusieurs fois sur plusieurs dev
 
 La manière difficile: Mock et Stub de façon à prendre en charge le multi-device en une seule suite de tests.
 
-#### Les Faux Devices
+#### Device Fakes
 
 Comme pour beaucoup de choses, c'était plus simple avant. Quand vous pouvez, configurez juste une taille de device and partez de là. Allez jeter un coup d'œil dans le projet Eigen - ARTestContext.m
 
@@ -30,6 +30,8 @@ static OCMockObject *ARPartialScreenMock;
   [[[[ARPartialScreenMock stub] andReturnValue:phoneSize] ignoringNonObjectArgs] _applicationFrameForInterfaceOrientation:0 usingStatusbarHeight:0 ignoreStatusBar:NO];
 }
 ```
-Cela permet d'être certain que tous les ViewControllers sont créés à la taille attendue. Vous pouvez alors utiliser votre propre logique pour déterminer iPhone vs iPad. Cq marche pour des cas simples, mais ce n'est pas optimal dans le paysage actuel des applications iOS.
+Cela permet d'être certain que tous les ViewControllers sont créés à la taille attendue. Vous pouvez alors utiliser votre propre logique pour déterminer iPhone vs iPad. Ca marche pour des cas simples, mais ce n'est pas optimal dans le paysage actuel des applications iOS.
 
-#### Les Faux Traits
+#### Trait Fakes
+
+Les collections de trait sont maintenant la manière recommandée pour distinguer les devices, car un iPad peut maintenant montrer votre app dans un écran de la taille d'un iPhone. Vous ne pouvez pas vous baser sur le fait d'avoir une application à la même taille de l'écran. Cela devient plus complexe. 🎉
