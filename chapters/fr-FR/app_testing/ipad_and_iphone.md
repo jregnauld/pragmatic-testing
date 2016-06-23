@@ -34,4 +34,34 @@ Cela permet d'être certain que tous les ViewControllers sont créés à la tail
 
 #### Trait Fakes
 
-Les collections de trait sont maintenant la manière recommandée pour distinguer les devices, car un iPad peut maintenant montrer votre app dans un écran de la taille d'un iPhone. Vous ne pouvez pas vous baser sur le fait d'avoir une application à la même taille de l'écran. Cela devient plus complexe. 🎉
+Les collections de trait sont maintenant la manière recommandée pour distinguer les devices, car un iPad peut maintenant afficher votre app dans un écran de la taille d'un iPhone. Vous ne pouvez pas vous baser sur le fait d'avoir une application à la même taille de l'écran. Cela devient plus complexe. 🎉
+
+Ce n'est pas une partie où j'ai passé beaucoup de temps, donc considérez cette section comme une beta. Si quelqu'un veut aller plus loin, je serais intéréssé de savoir quel est l'élément clé à connaitre pour se former sur les collections et pour stubbé comme je l'ai fait avec `_applicationFrameForInterfaceOrientation:usingStatusbarHeight:ignoreStatusBar:`.
+
+Chaque View ou View Controller (V/VC) a des traits de collections en read-only, les V/VCs peut écouter les traits qui changent et les re-organiser: Par exemple, nous avons une vue qui s'alloue elle-même lors d'un changement de collection:
+
+TODO: Lier à AuctionBannerView.swift
+
+``` swift
+class AuctionBannerView: UIView {
+
+  override func traitCollectionDidChange(previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+
+    // Remove all subviews and call setupViews() again to start from scratch.
+    subviews.forEach { $0.removeFromSuperview() }
+    setupViews()
+  }
+}
+```
+
+Quand nous testons cette vue, nous stubbons le tableau de `traitCollection` et le trigger `traitCollectionDidChange`, nous l'avons fait dans notre librairie [Forgeries](https://github.com/ashfurrow/forgeries). Ca y ressemble beaucoup, avec l'environnement étant la V/VC.
+
+``` objc
+void stubTraitCollectionInEnvironment(UITraitCollection *traitCollection, id<UITraitEnvironment> environment) {
+    id partialMock = [OCMockObject partialMockForObject:environment];
+    [[[partialMock stub] andReturn:traitCollection] traitCollection];
+    [environment traitCollectionDidChange:nil];
+}
+```
+Essayons d'appliquer notre réfléxion sur les V/VCs sur chaque type d'environnement où nous voulons y écrire des tests.
